@@ -8,25 +8,8 @@ pg.init()
 SCREEN = pg.display.set_mode((640,640))
 WIDTH = 640//40
 NUM = 40
-#pg.draw.rect(screen, color = (255,255,255), rect=(0,0,20,20))
-#pg.display.update()
-  
-
-# def make_grid():
-#     """make a 2d grid (it works)"""
-#     x = 0
-#     y = 0
-#     for i in range(640//20):
-
-#         y = i*20
-
-#         for j in range(640//20):
-
-#             x = j*20 
-#             pg.draw.rect(screen, color= (0,0,0), rect =(x,y,20,20), width=1)
-#     pg.display.update()
-
-# make_grid()
+FPS = 30 # frames per second setting
+fpsClock = pg.time.Clock()
 
 
 class Node():
@@ -38,112 +21,81 @@ class Node():
     GREEN = (0,204,0)
     BLUE =  (0,0,255)
     PURPLE = (127,0,255)
-    INITALIZE = True
+    #INITALIZE = True
 
-    def __init__(self, i, j, width, height,screen) -> None:
+    def __init__(self, i, j, width, screen) -> None:
 
         self.row = i    
         self.col = j
         self.width = width
-        self.height = height
         self.screen = screen
-        #self.neighbors = self.get_neighbors()
         self.wall = False
         self.start = False
         self.goal = False
         self.color = self.WHITE
-        #self.cost = 1
-        #self.set_wallstatus_onscreen()
-
-    # def get_neighbors(self):
-    #     """Return neighbors nodes objects"""
         
-    #     x = self.col
-    #     y = self.row
-       
-    #     if 0<=x< self.width and 0<=y< self.height:
-    #         neighbors = [(x-1,y), (x+1,y), (x, y-1), (x,y+1)]
-                    
-    #         return neighbors
-    #     else:
-    #         return None
-    
+    def draw(self):
+        """When called draws the node object on the screen based on its attributes by calling the draw.rect method."""
+        rect = (self.col*self.width, self.row*self.width, self.width, self.width)
+        pg.draw.rect(self.screen, color = self.color, rect=rect, width = 0)
+        pg.draw.rect(self.screen, color = self.BLACK, rect=rect, width = 1)
+        pg.display.update(rect)
+
     def make_start(self):
         self.color = self.ORANGE
         self.start = True
+        self.draw()
     
     def make_goal(self):
         self.color = self.BLUE
         self.goal = True
+        self.draw()
 
     def make_wall(self):
         self.color=self.BLACK
         self.wall = True
+        self.draw()
 
     def make_explored(self):
-        self.color = self.RED
-        rect = (self.col*self.width, self.row*self.width, self.width, self.width)
-        pg.draw.rect(self.screen, color = self.color, rect=rect, width = 0)
-        pg.display.update(rect)
+        if self.start or self.goal:
+            pass
+        else:
+            self.color = self.RED
+            self.draw()
 
     def make_open(self):
-        self.color = self.GREEN
-        rect = (self.col*self.width, self.row*self.width, self.width, self.width)
-        pg.draw.rect(self.screen, color = self.color, rect=rect, width = 0)
-        pg.display.update(rect)
+        if self.start or self.goal:
+            pass
+        else:
+            self.color = self.GREEN
+            self.draw()
 
 
     def make_path(self):
-        self.color = self.PURPLE
-        rect = (self.col*self.width, self.row*self.width, self.width, self.width)
-        pg.draw.rect(self.screen, color = self.color, rect=rect, width = 0)
-        pg.display.update(rect)
+        if self.start or self.goal:
+            pass
+        else:
+            self.color = self.PURPLE
+            self.draw()
 
-
-    def initialize_on_grid(self):
+    def reset(self):
         self.color = self.WHITE
-        rect = (self.col*self.width, self.row*self.width, self.width, self.width)
-        pg.draw.rect(self.screen, color = self.WHITE, rect=rect, width = 0)
-        pg.draw.rect(self.screen, color = self.BLACK, rect=rect, width = 1)
+        self.draw()
+        
     
     def cost_to_move(self):
 
         return 1
-
-    # def set_wallstatus_onscreen(self):
         
-    #     w = self.width
-    #     x = self.col
-    #     y = self.row
 
-
-    #     if self.INITALIZE:
-
-    #         pg.draw.rect(self.screen, color = self.BLACK, rect=(x*w, y*w, w, w), width=1)
-    #         self.INITALIZE = False
-        
-    #     elif self.start:
-    #         pg.draw.rect(self.screen, color = self.ORANGE, rect=(x*w, y*w, w, w))
-        
-    #     elif self.goal:
-
-    #         pg.draw.rect(self.screen, color = self.BLUE, rect=(x*w, y*w, w, w))
-
-    #     elif self.wall:
-            
-    #         pg.draw.rect(self.screen, color = self.BLACK, rect=(x*w, y*w, w, w))
-        
-    #     else:
-    #         pg.draw.rect(self.screen, color = self.WHITE, rect=(x*w, y*w, w, w), width=0)
-    #         pg.draw.rect(self.screen, color = self.BLACK, rect=(x*w, y*w, w, w), width=1)
-
-def get_neighbors(node,width,map):
-        """Return neighbors nodes objects"""
+def get_neighbors(node,screenside,map):
+        """Return a list of neighbor's (row,col). If a node is a wall, then is not included in the neighbors. 
+           If no neighbors are found, returns None."""
         
         x,y = node.col,node.row
         support = []
        
-        if 0<=x<width and 0<=y< width:
+        if 0<=x<screenside and 0<=y< screenside:
 
             neighbors = [map[y,x-1], map[y,x+1], map[y-1,x], map[y+1,x]]
 
@@ -155,17 +107,6 @@ def get_neighbors(node,width,map):
         else:
             return None
 
-def update_grid(screen, node) -> Node:
-    """when called draws and update the actual grid state"""
-    
-    x = node.col
-    y = node.row
-    w = node.width
-    pg.draw.rect(screen, color = node.color, rect=(x*w, y*w, w, w))
-    #pg.display.update()
-
-
-
 def heuristic(current, goal):
     """Manhattan distance"""
     x,y = current.col, current.row
@@ -174,22 +115,33 @@ def heuristic(current, goal):
     return abs(x-x2) + abs(y-y2)
 
 def coordinate_map(x,y,rectwidth):
+    """Function that maps the x,y coordinates of the screen to the actual node object in the map array. Returns i,j row and column indices."""
     i = y//rectwidth
     j = x//rectwidth
 
     return i,j
 
 def make_map(screen, width, num):
-    """note: for now assuming working with 640x640 screen and 20x20 grid"""
+    """Sets the map array and draws the grid on screen. Map is a numxnum array containing Node() objects in (row,col).
+    Width is the side of the square. num is the number of rows and cols."""
 
     map = np.empty((num,num), dtype=object)
+    start = None
+    goal = None
+    screen.fill((255,255,255))
 
     for i in range(num):
         for j in range(num):
 
-            map[i,j] = Node(i,j,width, width, screen)
+            map[i,j] = Node(i,j,width, screen)
             pg.draw.rect(screen, color = (0,0,0), rect=(j*width, i*width, width, width), width = 1)
-    return map
+
+            if i == 0 or i == num-1 or j == 0 or j == num-1:
+                map[i,j].make_wall()
+    
+    pg.display.update()
+
+    return map,start,goal
 
 class PriorityQueue():
     """implemento una priority queue utilizzando il modulo heapq di python. 
@@ -212,165 +164,168 @@ class PriorityQueue():
         return heapq.heappop(self.queue)[1]
 
 
+def A_star(start, goal, map):
+    """A star algorithm implementation."""
+
+    s = (start.col, start.row)
+    g = (goal.col, goal.row)
+    to_explore = PriorityQueue()
+    to_explore.heap_push(s, 0)  
+    explored = {}
+    explored[s] = 0            
+    path = {}                      
 
 
-def drawPath(path,map):
-    '''funzione per disegnare il percorso individuato: cambia il valore dei pixel in base a color creando una retta dal punto (x0,y0) al punto (x1,y1)'''
-    
-    for col,row in path:
-        
-        node = map[row,col]
-        node.make_path()
+    while not to_explore.is_empty():
 
-        
+        a,b = to_explore.pop()
+        map[b,a].make_explored()
+
+        if (a,b) == g:
+            
+            break
+
+        for x,y in get_neighbors(map[b,a],640,map):
+
+            node = map[y,x]
+            cost = explored[(a,b)] + node.cost_to_move()
+
+            if (x,y) not in explored.keys() or cost < explored[(x,y)]:
+
+                priority = cost + heuristic(node, goal)    
+                explored[(x,y)] = cost
+                to_explore.heap_push((x,y), priority)
+                path[(x, y)] = (a,b)
+                node.make_open()
+        pg.time.wait(20)
+
+    if (a,b)!=g:
+        return []  #an empty path
+
+    return path
+       
 
 def recover_path(start, goal, explored):
-    """Explored is a dictionary {child(x,y):parent(x,y)} """
+    """Function used to recover the path after A_star is called. Note: Explored should be a dictionary {child(x,y):parent(x,y)}
+        and it's the output of A_star() function. """
     
-    current = (goal.col,goal.row)
+    x,y = (goal.col,goal.row)
     path = []
 
-    while (current[0] != start.col) or (current[1] != start.row):
+    while (x != start.col) or (y != start.row):
 
-        path.append(explored[current])
-        current = explored[current]
+        path.append(explored[(x,y)])
+        x,y = explored[(x,y)]
 
     path.append((start.col,start.row))
     path.reverse()
 
     return path
 
-def A_star(start, goal, map):
-
-    #default_cost = (abs(start[0]-goal[0]) + abs(start[1]-goal[1]))/graph.scaling
-    s = (start.col, start.row)
-    g = (goal.col, goal.row)
-    to_explore = PriorityQueue()
-    to_explore.heap_push(s, 0)  #pusho lo starting point
-    explored = {}
-    explored[s] = 0            #dizionario contenente pair nodo:costo per raggiungerlo dallo start
-    path = {}                      #dizionario contenente pair nodo:nodo_da_cui_arrivo
-
-
-    while not to_explore.is_empty():
-
-        a,b = current = to_explore.pop()
-        map[b,a].make_explored()
-
-        if current == g:
-            
-            break
-
-        for x,y in get_neighbors(map[current[1],current[0]],640,map):
-
-            node = map[y,x]
-            cost = explored[current] + node.cost_to_move()
-
-            if (x,y) not in explored.keys() or cost < explored[(x,y)]:
-
-                priority = cost + heuristic(node, goal)       # aggiungo l'euristica come criterio di priorità
-                explored[(x,y)] = cost
-                to_explore.heap_push((x,y), priority)
-                path[(x, y)] = current
-                node.make_open()
-        pg.time.wait(40)
-    if current!=g:
-        return []  #an empty path
-
-    return path
-
-
-
-
-def main(screen, width,num):
+def drawPath(path,map):
+    '''Draws the optimal path after the call of recover_path(). Path is the output of recover_path().'''
     
-    screen.fill((255,255,255))  #fill screen with white background
-    
-    map = make_map(screen,width,num)
+    for col,row in path:
+        
+        node = map[row,col]
+        node.make_path()
 
-    start = None
-    goal = None
+
+def main(screen, width, num):
+     
+    map,start,goal = make_map(screen,width,num)
     run = True
-    started = False
-    pg.display.update()
+    ended = False
     
     while run:
         for event in pg.event.get():
+
+            while ended:
+                for event in pg.event.get():
+                    if event.type == pg.QUIT:
+                        sys.exit()
+
+                    if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                        sys.exit()
+
+                    if event.type == pg.KEYDOWN and event.key == pg.K_r:
+                        map,start,goal = make_map(screen,width,num) 
+                        ended = False
+
+
             if event.type == pg.QUIT:
                 sys.exit()
 
-            if started:
-                continue
+            if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                sys.exit()
 
             if event.type == pg.KEYDOWN:
-                
+
                 if event.key == pg.K_RETURN and start!= None and goal!= None:
-                    
-                    started = True
-                    path = A_star(start,goal,map)
+
+                    path = A_star(start,goal,map) 
 
                     if not path:
-                        started = False
+                        start = None
+                        goal = None
+                        ended = True
 
-                        continue
                     else:
                         
                         path = recover_path(start,goal,path)
-                        print('ok ho svolto l algoritmo')
                         drawPath(path,map)
                         start = None
                         goal = None
+                        ended = True
+                        
+                elif event.key == pg.K_r:
 
-                
+                    map,start,goal = make_map(screen,width,num)
+                    
 
-
-             
-        if pg.mouse.get_pressed()[0]:
-                
-            x,y = pg.mouse.get_pos()
-            i,j = coordinate_map(x,y,WIDTH)
-            node = map[i,j]
-            
-            if not start:
-                start = node
-                start.make_start()
-            
-            elif not goal and start!=node:
-                goal = node
-                goal.make_goal() 
-
-            elif start!=node and goal!=node:
-                node.make_wall()
-            
-            update_grid(screen, node)
-
-        elif pg.mouse.get_pressed()[2]:
-
+            if pg.mouse.get_pressed()[0]:
+                    
                 x,y = pg.mouse.get_pos()
                 i,j = coordinate_map(x,y,WIDTH)
                 node = map[i,j]
-
-                if node.start:
-                    
-                    start = None
-                    node.start = False
-
-                elif node.goal:
-
-                    goal = None
-                    node.goal = False
-
-                else:
-                    node.wall = False
-
-                node.initialize_on_grid()
-
                 
-        #start is None
-        #goal is None
-        #pg.time.delay(100) 
-        pg.display.update() 
+                if not start:
+                    start = node
+                    start.make_start()
+                
+                elif not goal and start!=node:
+                    goal = node
+                    goal.make_goal() 
+
+                elif start!=node and goal!=node:
+                    node.make_wall()
+                
+            elif pg.mouse.get_pressed()[2]:
+
+                    x,y = pg.mouse.get_pos()
+                    i,j = coordinate_map(x,y,WIDTH)
+                    node = map[i,j]
+
+                    if node.start:
+                        
+                        start = None
+                        node.start = False
+
+                    elif node.goal:
+
+                        goal = None
+                        node.goal = False
+
+                    else:
+                        node.wall = False
+
+                    node.reset()
+
+        pg.display.update()
+        fpsClock.tick(FPS) 
 
 
 
-main(SCREEN, WIDTH, NUM)
+if __name__ == '__main__':
+    main(SCREEN, WIDTH, NUM)
+
