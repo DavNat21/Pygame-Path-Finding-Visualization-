@@ -16,11 +16,11 @@ class Node():
 
     BLACK = (0,0,0)
     WHITE = (255,255,255)
-    ORANGE = (255,128,0)
-    RED = (204,0,0)
-    GREEN = (0,204,0)
+    ORANGE = (255,153,51)
+    CYAN = (153,255,255)
+    GREEN = (128,255,0)
     BLUE =  (0,0,255)
-    PURPLE = (127,0,255)
+    PINK = (204,153,255)
     #INITALIZE = True
 
     def __init__(self, i, j, width, screen) -> None:
@@ -60,7 +60,7 @@ class Node():
         if self.start or self.goal:
             pass
         else:
-            self.color = self.RED
+            self.color = self.CYAN
             self.draw()
 
     def make_open(self):
@@ -75,7 +75,7 @@ class Node():
         if self.start or self.goal:
             pass
         else:
-            self.color = self.PURPLE
+            self.color = self.PINK
             self.draw()
 
     def reset(self):
@@ -229,6 +229,7 @@ def drawPath(path,map):
         
         node = map[row,col]
         node.make_path()
+        pg.time.wait(20)
 
 
 def main(screen, width, num):
