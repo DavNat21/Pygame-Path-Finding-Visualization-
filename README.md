@@ -9,6 +9,6 @@ The main() will start a window with a 40x40 grid and:
 - Press esc or close button to escape.
 - Enjoy!
 
-**Note:** since this makes heavy use of pygame module, you should have it installed. You can do it by launching:
+**Note:** since this project makes use of pygame and numpy modules, you should have them installed. You can do it by launching:
 
-`pip install pygame`
+`pip install pygame numpy`
