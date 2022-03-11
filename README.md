@@ -4,9 +4,10 @@ A python implementation of A* search algorithm with GUI implemented using the **
 The main() will start a window with a 40x40 grid and:  
 - By left clicking on the grid you can place the starting node (orange color), the goal node (blue color) and walls (black). 
 - By right clicking you can clear the grid in specific spots.
-- Once setted start, goal and (eventually) walls press ENTER to start the algorithm and the animation.
-- Press R to reset everything and start a new grid.
-- Press esc or close button to escape.
+- Once setted start, goal and (eventually) walls press **ENTER** to start the algorithm and the animation.
+- Press **R** to reset everything and start a new grid.
+- Press **M** to generate a random maze.
+- Press **ESC** or close button to escape.
 - Enjoy!
 
 **Note:** since this project makes use of pygame and numpy modules, you should have them installed. You can do it by launching:
