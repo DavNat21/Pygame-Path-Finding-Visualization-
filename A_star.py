@@ -143,6 +143,19 @@ def make_map(screen, width, num):
 
     return map,start,goal
 
+def random_maze(screen,width, num):
+
+    map,start,goal = make_map(screen,width,num)
+
+    for i in range(1,num-1):
+        for j in range(1,num-1):
+            p = np.random.rand()
+            if p < 0.2:
+                map[i,j].make_wall()
+
+    return map,start,goal
+
+
 class PriorityQueue():
     """implemento una priority queue utilizzando il modulo heapq di python. 
         Inizializzo una lista vuota e definisco i due metodi push e pop"""
@@ -282,6 +295,9 @@ def main(screen, width, num):
                 elif event.key == pg.K_r:
 
                     map,start,goal = make_map(screen,width,num)
+                
+                elif event.key == pg.K_m:
+                    map,start,goal = random_maze(screen,width,num)
                     
 
             if pg.mouse.get_pressed()[0]:
