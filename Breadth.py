@@ -206,7 +206,7 @@ def breadth_first(start, goal, map):
 
             if (x,y) not in explored.keys() or cost < explored[(x,y)]:
 
-                priority = heuristic(map[b,a], map[x,y])     
+                priority = heuristic(map[b,a], goal)     
                 explored[(x,y)] = cost
                 to_explore.heap_push((x,y), priority)
                 path[(x, y)] = (a,b)
