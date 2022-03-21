@@ -7,6 +7,7 @@ import heapq
 
 pg.init()
 SCREEN = pg.display.set_mode((640,640))
+pg.display.set_caption('Greedy BFS')
 WIDTH = 640//40
 NUM = 40
 FPS = 30 # frames per second setting
@@ -178,7 +179,7 @@ class PriorityQueue():
         return heapq.heappop(self.queue)[1]
 
 
-def breadth_first(start, goal, map):
+def GreedyBFS(start, goal, map):
     """A star algorithm implementation."""
 
     s = (start.col, start.row)
@@ -278,7 +279,7 @@ def main(screen, width, num):
 
                 if event.key == pg.K_RETURN and start!= None and goal!= None:
 
-                    path = breadth_first(start,goal,map) 
+                    path = GreedyBFS(start,goal,map) 
 
                     if not path:
                         start = None
