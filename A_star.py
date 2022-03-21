@@ -6,7 +6,7 @@ import heapq
 
 pg.init()
 SCREEN = pg.display.set_mode((640,640))
-WIDTH = 640//40
+WIDTH = 640//40   
 NUM = 40
 FPS = 30 # frames per second setting
 fpsClock = pg.time.Clock()
@@ -21,7 +21,6 @@ class Node():
     GREEN = (128,255,0)
     BLUE =  (0,0,255)
     PINK = (204,153,255)
-    #INITALIZE = True
 
     def __init__(self, i, j, width, screen) -> None:
 
