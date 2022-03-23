@@ -6,7 +6,6 @@ from Algorithms.PathFinding import *
 
 pg.init()
 SCREEN = pg.display.set_mode((640,640))
-pg.display.set_caption('A_star')
 WIDTH = 640//40   
 NUM = 40
 FPS = 30 # frames per second setting
